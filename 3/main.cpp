@@ -7,6 +7,9 @@
 #include <algorithm>
 #include <cmath>
 #include <functional>
+
+// Подключаем windows.h после всех остальных заголовков и отключаем макросы min/max
+#define NOMINMAX
 #include <windows.h>
 
 class PGMImage {
@@ -75,7 +78,7 @@ public:
             for (int i = 0; i < height; ++i) {
                 for (int j = 0; j < width; ++j) {
                     unsigned char pixel = static_cast<unsigned char>(
-                        std::min(std::max(pixels[i][j], 0), 255));
+                        (std::min)((std::max)(pixels[i][j], 0), 255));
                     file.write(reinterpret_cast<char*>(&pixel), 1);
                 }
             }
@@ -114,7 +117,7 @@ public:
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
                 int newVal = pixels[i][j] + static_cast<int>(dis(gen));
-                pixels[i][j] = std::min(std::max(newVal, 0), maxVal);
+                pixels[i][j] = (std::min)((std::max)(newVal, 0), maxVal);
             }
         }
     }
@@ -203,7 +206,7 @@ public:
     
     void setPixel(int x, int y, int value) { 
         if (y >= 0 && y < height && x >= 0 && x < width) {
-            pixels[y][x] = std::min(std::max(value, 0), maxVal); 
+            pixels[y][x] = (std::min)((std::max)(value, 0), maxVal); 
         }
     }
 };
@@ -231,8 +234,9 @@ public:
     
     static double calculatePSNR(const PGMImage& img1, const PGMImage& img2) {
         double mse = calculateMSE(img1, img2);
-        if (mse <= 0.0) return 0.0;
-        return 10.0 * log10(255.0 * 255.0 / mse);
+        if (mse <= 0.0 || std::isnan(mse) || std::isinf(mse)) return 0.0;
+        double psnr = 10.0 * log10(255.0 * 255.0 / mse);
+        return (std::isnan(psnr) || std::isinf(psnr)) ? 0.0 : psnr;
     }
     
     static double calculateSSIM(const PGMImage& img1, const PGMImage& img2) {
@@ -253,6 +257,11 @@ public:
         mean1 /= (width * height);
         mean2 /= (width * height);
         
+        // Если изображения идентичные, возвращаем 1.0
+        if (mean1 == mean2 && mean1 == 0) {
+            return 1.0;
+        }
+        
         double var1 = 0.0, var2 = 0.0, covar = 0.0;
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
@@ -268,8 +277,24 @@ public:
         covar /= (width * height - 1);
         
         const double C1 = 6.5025, C2 = 58.5225;
-        return ((2 * mean1 * mean2 + C1) * (2 * covar + C2)) /
-               ((mean1 * mean1 + mean2 * mean2 + C1) * (var1 + var2 + C2));
+        
+        double numerator = (2 * mean1 * mean2 + C1) * (2 * covar + C2);
+        double denominator = (mean1 * mean1 + mean2 * mean2 + C1) * (var1 + var2 + C2);
+        
+        if (denominator == 0.0) {
+            return 1.0; // Если знаменатель 0, изображения идентичны
+        }
+        
+        double ssim = numerator / denominator;
+        return (std::isnan(ssim) || std::isinf(ssim)) ? 1.0 : ssim;
+    }
+    
+    // Функция для безопасного вывода чисел (заменяет NaN на 0)
+    static double safeValue(double value) {
+        if (std::isnan(value) || std::isinf(value)) {
+            return 0.0;
+        }
+        return value;
     }
 };
 
@@ -371,12 +396,17 @@ void processAllImages(const std::string& inputDir, const std::string& outputDir)
                 double psnr = ImageComparator::calculatePSNR(original, filtered);
                 double ssim = ImageComparator::calculateSSIM(original, filtered);
                 
+                // Используем безопасные значения (заменяем NaN на 0)
+                double safe_mse = ImageComparator::safeValue(mse);
+                double safe_psnr = ImageComparator::safeValue(psnr);
+                double safe_ssim = ImageComparator::safeValue(ssim);
+                
                 csvFile << filename << "," << noise.first << "," << filter.first << ","
-                       << mse << "," << psnr << "," << ssim << "\n";
+                       << safe_mse << "," << safe_psnr << "," << safe_ssim << "\n";
                 
                 std::cout << "  " << noise.first << " + " << filter.first 
-                          << " - MSE: " << mse << ", PSNR: " << psnr 
-                          << ", SSIM: " << ssim << std::endl;
+                          << " - MSE: " << safe_mse << ", PSNR: " << safe_psnr 
+                          << ", SSIM: " << safe_ssim << std::endl;
             }
         }
     }
