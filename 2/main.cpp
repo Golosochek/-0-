@@ -111,5 +111,58 @@ int main() {
     arr7.subtract(arr6);
     arr7.print();
 
+    // Задание 5: Тестирование ExtendedDynamicArray
+    cout << endl << "=== Демонстрация работы класса ExtendedDynamicArray ===" << endl << endl;
+    
+    // Создание расширенного массива
+    ExtendedDynamicArray extArr1(5);
+    extArr1.setValue(0, 10);
+    extArr1.setValue(1, 20);
+    extArr1.setValue(2, 30);
+    extArr1.setValue(3, 40);
+    extArr1.setValue(4, 50);
+    
+    cout << "Расширенный массив 1: ";
+    extArr1.print();
+    
+    // Тестирование новых методов
+    cout << "Среднее значение: " << extArr1.calculateAverage() << endl;
+    cout << "Медианное значение: " << extArr1.calculateMedian() << endl;
+    cout << "Наименьший элемент: " << extArr1.findMin() << endl;
+    cout << "Наибольший элемент: " << extArr1.findMax() << endl;
+    
+    cout << endl << "--- Тестирование с другим массивом ---" << endl;
+    
+    ExtendedDynamicArray extArr2(6);
+    extArr2.setValue(0, 15);
+    extArr2.setValue(1, -10);
+    extArr2.setValue(2, 25);
+    extArr2.setValue(3, 5);
+    extArr2.setValue(4, -5);
+    extArr2.setValue(5, 35);
+    
+    cout << "Расширенный массив 2: ";
+    extArr2.print();
+    
+    cout << "Среднее значение: " << extArr2.calculateAverage() << endl;
+    cout << "Медианное значение: " << extArr2.calculateMedian() << endl;
+    cout << "Наименьший элемент: " << extArr2.findMin() << endl;
+    cout << "Наибольший элемент: " << extArr2.findMax() << endl;
+    
+    cout << endl << "--- Тестирование с нечетным количеством элементов ---" << endl;
+    
+    ExtendedDynamicArray extArr3(3);
+    extArr3.setValue(0, 10);
+    extArr3.setValue(1, 5);
+    extArr3.setValue(2, 15);
+    
+    cout << "Расширенный массив 3: ";
+    extArr3.print();
+    
+    cout << "Среднее значение: " << extArr3.calculateAverage() << endl;
+    cout << "Медианное значение: " << extArr3.calculateMedian() << endl;
+    cout << "Наименьший элемент: " << extArr3.findMin() << endl;
+    cout << "Наибольший элемент: " << extArr3.findMax() << endl;
+
     return 0;
 }

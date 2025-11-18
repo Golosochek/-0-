@@ -1,6 +1,7 @@
 #include "DynamicArray.h"
 #include <iostream>
 #include <cmath>
+#include <algorithm>
 
 using namespace std;
 
@@ -155,4 +156,99 @@ DynamicArray& DynamicArray::subtract(const DynamicArray& other) {
     }
     
     return *this;
+}
+
+// Реализация методов ExtendedDynamicArray
+
+// Конструктор ExtendedDynamicArray
+ExtendedDynamicArray::ExtendedDynamicArray(int arraySize) : DynamicArray(arraySize) {}
+
+// Конструктор копирования ExtendedDynamicArray
+ExtendedDynamicArray::ExtendedDynamicArray(const DynamicArray& other) : DynamicArray(other) {}
+
+// Вычисление среднего значения
+double ExtendedDynamicArray::calculateAverage() const {
+    if (getSize() == 0) {
+        return 0.0;
+    }
+    
+    int sum = 0;
+    int value;
+    for (int i = 0; i < getSize(); i++) {
+        getValue(i, value);
+        sum += value;
+    }
+    
+    return static_cast<double>(sum) / getSize();
+}
+
+// Вычисление медианного значения
+double ExtendedDynamicArray::calculateMedian() const {
+    int arraySize = getSize();
+    if (arraySize == 0) {
+        return 0.0;
+    }
+    
+    // Создаем временный массив для сортировки
+    int* tempArray = new int[arraySize];
+    int value;
+    for (int i = 0; i < arraySize; i++) {
+        getValue(i, value);
+        tempArray[i] = value;
+    }
+    
+    // Сортируем массив
+    sort(tempArray, tempArray + arraySize);
+    
+    double median;
+    if (arraySize % 2 == 0) {
+        // Четное количество элементов - среднее двух центральных
+        median = (tempArray[arraySize/2 - 1] + tempArray[arraySize/2]) / 2.0;
+    } else {
+        // Нечетное количество элементов - центральный элемент
+        median = tempArray[arraySize/2];
+    }
+    
+    delete[] tempArray;
+    return median;
+}
+
+// Нахождение наименьшего элемента
+int ExtendedDynamicArray::findMin() const {
+    if (getSize() == 0) {
+        return 0;
+    }
+    
+    int minValue;
+    getValue(0, minValue);
+    
+    int value;
+    for (int i = 1; i < getSize(); i++) {
+        getValue(i, value);
+        if (value < minValue) {
+            minValue = value;
+        }
+    }
+    
+    return minValue;
+}
+
+// Нахождение наибольшего элемента
+int ExtendedDynamicArray::findMax() const {
+    if (getSize() == 0) {
+        return 0;
+    }
+    
+    int maxValue;
+    getValue(0, maxValue);
+    
+    int value;
+    for (int i = 1; i < getSize(); i++) {
+        getValue(i, value);
+        if (value > maxValue) {
+            maxValue = value;
+        }
+    }
+    
+    return maxValue;
 }

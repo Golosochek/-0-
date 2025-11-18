@@ -45,4 +45,18 @@ private:
     bool isValidIndex(int index) const;
 };
 
+// Новый класс, наследующий от DynamicArray
+class ExtendedDynamicArray : public DynamicArray {
+public:
+    // Конструкторы
+    ExtendedDynamicArray(int arraySize);
+    ExtendedDynamicArray(const DynamicArray& other);
+    
+    // Новые методы
+    double calculateAverage() const;        // Вычисление среднего значения
+    double calculateMedian() const;         // Вычисление медианного значения
+    int findMin() const;                    // Нахождение наименьшего элемента
+    int findMax() const;                    // Нахождение наибольшего элемента
+};
+
 #endif
