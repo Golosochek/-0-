@@ -2,8 +2,28 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm>
+#include <fstream>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
 
 using namespace std;
+
+// Вспомогательная функция для получения текущей даты и времени
+string getCurrentDateTime() {
+    time_t now = time(0);
+    tm* localTime = localtime(&now);
+    
+    stringstream ss;
+    ss << 1900 + localTime->tm_year << "_"
+       << setw(2) << setfill('0') << localTime->tm_mon + 1 << "_"
+       << setw(2) << setfill('0') << localTime->tm_mday << "_"
+       << setw(2) << setfill('0') << localTime->tm_hour << "_"
+       << setw(2) << setfill('0') << localTime->tm_min << "_"
+       << setw(2) << setfill('0') << localTime->tm_sec;
+    
+    return ss.str();
+}
 
 // Конструктор
 DynamicArray::DynamicArray(int arraySize) {
@@ -46,6 +66,12 @@ void DynamicArray::print() const {
         }
     }
     cout << "]" << endl;
+}
+
+// Экспорт данных в файл (базовая реализация)
+void DynamicArray::exportToFile() const {
+    cout << "Экспорт данных массива в консоль:" << endl;
+    print();
 }
 
 // Проверка значения на принадлежность к промежутку [-100, 100]
@@ -251,4 +277,72 @@ int ExtendedDynamicArray::findMax() const {
     }
     
     return maxValue;
+}
+
+// Реализация методов ArrTxt
+
+// Конструктор ArrTxt
+ArrTxt::ArrTxt(int arraySize) : DynamicArray(arraySize) {}
+
+// Конструктор копирования ArrTxt
+ArrTxt::ArrTxt(const DynamicArray& other) : DynamicArray(other) {}
+
+// Экспорт данных в txt файл
+void ArrTxt::exportToFile() const {
+    string fileName = "array_" + getCurrentDateTime() + ".txt";
+    
+    ofstream outFile(fileName);
+    if (!outFile.is_open()) {
+        cerr << "Ошибка при создании файла: " << fileName << endl;
+        return;
+    }
+    
+    outFile << "=== Динамический массив (TXT формат) ===" << endl;
+    outFile << "Дата создания: " << getCurrentDateTime() << endl;
+    outFile << "Размер массива: " << getSize() << endl;
+    outFile << "Элементы массива:" << endl;
+    
+    for (int i = 0; i < getSize(); i++) {
+        int value;
+        getValue(i, value);
+        outFile << "[" << i << "] = " << value << endl;
+    }
+    
+    outFile << "=== Конец данных ===" << endl;
+    outFile.close();
+    
+    cout << "Данные успешно экспортированы в файл: " << fileName << endl;
+}
+
+// Реализация методов ArrCSV
+
+// Конструктор ArrCSV
+ArrCSV::ArrCSV(int arraySize) : DynamicArray(arraySize) {}
+
+// Конструктор копирования ArrCSV
+ArrCSV::ArrCSV(const DynamicArray& other) : DynamicArray(other) {}
+
+// Экспорт данных в csv файл
+void ArrCSV::exportToFile() const {
+    string fileName = "array_" + getCurrentDateTime() + ".csv";
+    
+    ofstream outFile(fileName);
+    if (!outFile.is_open()) {
+        cerr << "Ошибка при создании файла: " << fileName << endl;
+        return;
+    }
+    
+    // Заголовок CSV
+    outFile << "Index,Value" << endl;
+    
+    // Данные
+    for (int i = 0; i < getSize(); i++) {
+        int value;
+        getValue(i, value);
+        outFile << i << "," << value << endl;
+    }
+    
+    outFile.close();
+    
+    cout << "Данные успешно экспортированы в файл: " << fileName << endl;
 }

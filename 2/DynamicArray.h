@@ -1,6 +1,8 @@
 #ifndef DYNAMICARRAY_H
 #define DYNAMICARRAY_H
 
+#include <string>
+
 class DynamicArray {
 private:
     int* data;      // Указатель на данные массива
@@ -14,10 +16,10 @@ public:
     DynamicArray(const DynamicArray& other);
     
     // Деструктор
-    ~DynamicArray();
+    virtual ~DynamicArray();  // Сделал виртуальным
 
     // Функция вывода всех значений массива
-    void print() const;
+    virtual void print() const;
 
     // Сеттер - установка значения по индексу
     bool setValue(int index, int value);
@@ -36,6 +38,9 @@ public:
 
     // Вспомогательные методы
     int getSize() const { return size; }
+    
+    // Виртуальный метод для экспорта данных
+    virtual void exportToFile() const;
     
 private:
     // Проверка значения на принадлежность к промежутку [-100, 100]
@@ -57,6 +62,28 @@ public:
     double calculateMedian() const;         // Вычисление медианного значения
     int findMin() const;                    // Нахождение наименьшего элемента
     int findMax() const;                    // Нахождение наибольшего элемента
+};
+
+// Класс для вывода в txt файл
+class ArrTxt : public DynamicArray {
+public:
+    // Конструкторы
+    ArrTxt(int arraySize);
+    ArrTxt(const DynamicArray& other);
+    
+    // Переопределение метода экспорта
+    virtual void exportToFile() const override;
+};
+
+// Класс для вывода в csv файл
+class ArrCSV : public DynamicArray {
+public:
+    // Конструкторы
+    ArrCSV(int arraySize);
+    ArrCSV(const DynamicArray& other);
+    
+    // Переопределение метода экспорта
+    virtual void exportToFile() const override;
 };
 
 #endif

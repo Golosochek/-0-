@@ -3,6 +3,12 @@
 
 using namespace std;
 
+// Функция для демонстрации полиморфизма
+void exportArray(const DynamicArray& arr) {
+    cout << endl << "--- Экспорт массива ---" << endl;
+    arr.exportToFile();
+}
+
 int main() {
     cout << "=== Демонстрация работы класса DynamicArray ===" << endl << endl;
 
@@ -163,6 +169,65 @@ int main() {
     cout << "Медианное значение: " << extArr3.calculateMedian() << endl;
     cout << "Наименьший элемент: " << extArr3.findMin() << endl;
     cout << "Наибольший элемент: " << extArr3.findMax() << endl;
+
+    // Демонстрация полиморфизма из ПЗ5
+    cout << endl << "=== Демонстрация полиморфизма (ПЗ5) ===" << endl << endl;
+    
+    // Создание массива в txt формате
+    ArrTxt txtArr(4);
+    txtArr.setValue(0, 10);
+    txtArr.setValue(1, 20);
+    txtArr.setValue(2, 30);
+    txtArr.setValue(3, 40);
+    
+    cout << "Массив ArrTxt: ";
+    txtArr.print();
+    
+    // Создание массива в csv формате
+    ArrCSV csvArr(3);
+    csvArr.setValue(0, 5);
+    csvArr.setValue(1, 15);
+    csvArr.setValue(2, 25);
+    
+    cout << "Массив ArrCSV: ";
+    csvArr.print();
+    
+    // Использование функции полиморфизма
+    cout << endl << "1. Экспорт через полиморфизм:" << endl;
+    exportArray(txtArr);  // Будет вызван метод ArrTxt::exportToFile()
+    exportArray(csvArr);  // Будет вызван метод ArrCSV::exportToFile()
+    
+    // Использование указателей для демонстрации полиморфизма (как в примере из задания)
+    cout << endl << "2. Экспорт через указатели (как в примере задания):" << endl;
+    DynamicArray* arrays[3];
+    
+    // Создаем объекты разных типов
+    arrays[0] = new DynamicArray(2);
+    arrays[0]->setValue(0, 100);
+    arrays[0]->setValue(1, -50);
+    
+    arrays[1] = new ArrTxt(3);
+    arrays[1]->setValue(0, 1);
+    arrays[1]->setValue(1, 2);
+    arrays[1]->setValue(2, 3);
+    
+    arrays[2] = new ArrCSV(4);
+    arrays[2]->setValue(0, 10);
+    arrays[2]->setValue(1, 20);
+    arrays[2]->setValue(2, 30);
+    arrays[2]->setValue(3, 40);
+    
+    // Экспорт всех массивов через полиморфизм
+    for (int i = 0; i < 3; i++) {
+        cout << endl << "Массив " << i + 1 << ":" << endl;
+        arrays[i]->print();
+        arrays[i]->exportToFile();  // Вызовется правильная реализация
+        delete arrays[i];
+    }
+    
+    // Экспорт ExtendedDynamicArray
+    cout << endl << "3. Экспорт ExtendedDynamicArray:" << endl;
+    exportArray(extArr1);
 
     return 0;
 }

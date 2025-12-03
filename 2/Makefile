@@ -1,13 +1,18 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -Wextra
-TARGET = dynamic_array_demo
-SOURCES = main.cpp DynamicArray.cpp
-HEADERS = DynamicArray.h
+CXXFLAGS = -std=c++11 -Wall
+TARGET = main
+SRCS = main.cpp DynamicArray.cpp
+OBJS = $(SRCS:.cpp=.o)
 
-$(TARGET): $(SOURCES) $(HEADERS)
-	$(CXX) $(CXXFLAGS) $(SOURCES) -o $(TARGET)
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(TARGET)
+	del /Q *.o $(TARGET).exe 2>nul || rm -f *.o $(TARGET)
 
-.PHONY: clean
+.PHONY: all clean
